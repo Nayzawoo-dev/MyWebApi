@@ -35,15 +35,15 @@ namespace MyWebApi.Services
 
         public ResponseModel GetPersonListById(int id)
         {
-            if (DevCode.isInt(id))
-            {
-                var result = new ResponseModel
-                {
-                    Complete = false,
-                    Message = "Your Id is Invalid"
-                };
-                return result;
-            }
+            //if (DevCode.isInt(id))
+            //{
+            //    var result = new ResponseModel
+            //    {
+            //        Complete = false,
+            //        Message = "Your Id is Invalid"
+            //    };
+            //    return result;
+            //}
             string query = "select * from Tbl_Window where Id = @Id";
             var list = _dapperservices.Query<PersonModels>(query, new PersonModels
             {
@@ -62,15 +62,18 @@ namespace MyWebApi.Services
         {
             string field = string.Empty;
 
+            
 
-            if (!model.UserName.isNull())
+            if (model.UserName.isNull())
             {
                 field += "@UserName,";
             }
 
-            if (!model.Password.isNull()) {
+            if (model.Password.isNull())
+            {
                 field += "@Password,";
             }
+
 
             if (field.Length == 0)
             {
@@ -88,7 +91,7 @@ namespace MyWebApi.Services
            ([UserName]
            ,[Password])
      VALUES
-           {field}";
+           ({field})";
                 var result = _dapperservices.Execute(query, model);
                 var res2 = new ResponseModel
                 {
@@ -102,13 +105,11 @@ namespace MyWebApi.Services
 
         public ResponseModel UpdateAndPostPerson(int id, PersonModels model)
         {
+            model.Id = id;
             string field = string.Empty;
             string query = "select * from Tbl_Window where Id = @Id";
-            var list = _dapperservices.Query<PersonModels>(query, new PersonModels
-            {
-                Id = id,
-            });
-            if(list.Count == 0)
+            var list = _dapperservices.Query<PersonModels>(query, model);
+            if (list.Count == 0)
             {
                 if (!model.UserName.isNull())
                 {
@@ -129,54 +130,141 @@ namespace MyWebApi.Services
                     };
                     return res1;
                 }
-                else
-                {
-                    field = field.Substring(0, field.Length - 1);
-                    string query2 = $@"INSERT INTO [dbo].[Tbl_Window]
+
+                field = field.Substring(0, field.Length - 1);
+                string query2 = $@"INSERT INTO [dbo].[Tbl_Window]
            ([UserName]
            ,[Password])
      VALUES
-           {field}";
-                    var result = _dapperservices.Execute(query, model);
-                    var res2 = new ResponseModel
-                    {
-                        Complete = result > 0,
-                        Message = result > 0 ? "Post Success" : "Post Fail"
-                    };
-                    return res2;
-                }
+           ({field})";
+                var result1 = _dapperservices.Execute(query2, model);
+                var res2 = new ResponseModel
+                {
+                    Complete = result1 > 0,
+                    Message = result1 > 0 ? "Post Success" : "Post Fail"
+                };
+                return res2;
+
             }
 
-            if(list.Count > 0)
+            if (!model.UserName.isNull())
             {
-                if (!model.UserName.isNull())
-                {
-                    field += "[UserName] = @UserName,";
-                }
-
-                if (!model.Password.isNull()) {
-                    field += "[Password] = @Password,";
-                }
-
-                if(field.Length == 0)
-                {
-                    var res3 = new ResponseModel
-                    {
-                        Complete = false,
-                        Message = "No Field To Update"
-                    };
-                    return res3;
-                }
-
-                if(field.Length > 0)
-                {
-                    field = field.Substring(0, field.Length - 1);
-
-                }
+                field += "[UserName] = @UserName,";
             }
-         
 
+            if (!model.Password.isNull())
+            {
+                field += "[Password] = @Password,";
+            }
+
+            if (field.Length == 0)
+            {
+                var res3 = new ResponseModel
+                {
+                    Complete = false,
+                    Message = "No Field To Update"
+                };
+                return res3;
+            }
+
+            field = field.Substring(0, field.Length - 1);
+            string query3 = $@"UPDATE [dbo].[Tbl_Window]
+   SET {field}
+ WHERE Id = @Id";
+            var result = _dapperservices.Execute(query3, model);
+            var finalres = new ResponseModel
+            {
+                Complete = result > 0,
+                Message = result > 0 ? "Complete" : "Fail"
+            };
+            return finalres;
+        }
+
+        public ResponseModel UpdatePerson(int id, PersonModels model)
+        {
+            model.Id = id;
+            string field = string.Empty;
+            string query = "select * from Tbl_Window where Id = @Id";
+            var list = _dapperservices.Query<PersonModels>(query, model);
+            if (list.Count == 0)
+            {
+                ResponseModel res = new ResponseModel
+                {
+                    Complete = false,
+                    Message = "Person not found"
+                };
+                return res;
+            }
+
+            if (!model.UserName.isNull())
+            {
+                field += "[UserName] = @UserName,";
+            }
+
+            if (!model.Password.isNull())
+            {
+                field += "[Password] = @Password,";
+            }
+
+            if (field.Length == 0)
+            {
+                ResponseModel res1 = new ResponseModel
+                {
+                    Complete = false,
+                    Message = "No Filed To Update"
+                };
+                return res1;
+            }
+
+            if (field.Length > 0)
+            {
+                field = field.Substring(0, field.Length - 1);
+            }
+
+            string query2 = $@"UPDATE [dbo].[Tbl_Window]
+   SET {field}
+ WHERE Id = @Id";
+            var res2 = _dapperservices.Execute(query2, model);
+            ResponseModel resopn = new ResponseModel
+            {
+                Complete = res2 > 0,
+                Message = res2 > 0 ? "Update Complete" : "Update Fail"
+            };
+
+            return resopn;
+        }
+
+        public ResponseModel DeletePerson(int id)
+        {
+            string query = "select * from Tbl_Window where Id = @Id";
+            var list = _dapperservices.Query<PersonModels>(query, new PersonModels
+            {
+                Id = id
+            });
+            if (list.Count == 0)
+            {
+                ResponseModel res1 = new ResponseModel
+                {
+                    Complete = false,
+                    Message = "Person not found"
+                };
+                return res1;
+            }
+            string query2 = @"DELETE FROM [dbo].[Tbl_Window]
+      WHERE Id = @Id";
+            int res = _dapperservices.Execute(query2, new PersonModels
+            {
+                Id = id
+            });
+            ResponseModel model = new ResponseModel
+            {
+                Complete = res > 0,
+                Message = res > 0 ? "Delete Success" : "Delete Fail"
+            };
+            return model;
 
         }
+
+
     }
 }
