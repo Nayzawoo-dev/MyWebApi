@@ -61,15 +61,16 @@ namespace MyWebApi.Services
         public ResponseModel PostPerson(PersonModels model)
         {
             string field = string.Empty;
-
             
+            string password = model.Password.Replace(" ", "")!;
+            model.Password = password;
 
-            if (model.UserName.isNull())
+            if (!model.UserName.isNull())
             {
                 field += "@UserName,";
             }
 
-            if (model.Password.isNull())
+            if (!model.Password.isNull())
             {
                 field += "@Password,";
             }
@@ -118,6 +119,8 @@ namespace MyWebApi.Services
 
                 if (!model.Password.isNull())
                 {
+                    string password = model.Password.Replace(" ", "")!;
+                    model.Password = password;
                     field += "@Password,";
                 }
 
@@ -154,6 +157,8 @@ namespace MyWebApi.Services
 
             if (!model.Password.isNull())
             {
+                string password = model.Password.Replace(" ", "")!;
+                model.Password = password;
                 field += "[Password] = @Password,";
             }
 
@@ -203,6 +208,8 @@ namespace MyWebApi.Services
 
             if (!model.Password.isNull())
             {
+                string password = model.Password.Replace(" ", "")!;
+                model.Password = password;
                 field += "[Password] = @Password,";
             }
 

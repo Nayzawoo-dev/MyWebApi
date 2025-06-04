@@ -11,7 +11,7 @@ namespace Database.Shared
     {
         public static bool isNull(this string? str)
         {
-            var res = str == null && string.IsNullOrEmpty(str.Trim()) && string.IsNullOrWhiteSpace(str.Trim());
+            var res = str == null || string.IsNullOrEmpty(str.Trim()) || string.IsNullOrWhiteSpace(str.Trim());
             return res;
         }
 

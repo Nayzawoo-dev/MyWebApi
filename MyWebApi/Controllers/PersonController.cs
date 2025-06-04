@@ -23,7 +23,7 @@ namespace MyWebApi.Controllers
             return Ok(res);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public IActionResult GetPersonById(int id) { 
         var res =_personsevices.GetPersonListById(id);
         if(res.Complete == false)
@@ -55,8 +55,7 @@ namespace MyWebApi.Controllers
             return Ok(model);
         }
 
-        [HttpPatch("id")]
-
+        [HttpPatch("{id}")]
         public IActionResult Update([FromBody]PersonModels person, int id)
         {
             var model = _personsevices.UpdatePerson(id, person);
@@ -67,7 +66,7 @@ namespace MyWebApi.Controllers
             return Ok(model);
         }
 
-        [HttpDelete("id)")]
+        [HttpDelete("{id}")]
         public IActionResult DeletePerson(int id)
         {
             ResponseModel res = _personsevices.DeletePerson(id);
