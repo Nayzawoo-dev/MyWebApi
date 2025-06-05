@@ -4,11 +4,11 @@ using MyWebApi.Models;
 
 namespace MyWebApi.Services
 {
-    public class PersonServices : IPersonServices
+    public class PersonServices2 : IPersonServices
     {
         private readonly DapperServices _dapperservices;
 
-        public PersonServices(DapperServices dapperservice)
+        public PersonServices2(DapperServices dapperservice)
         {
             _dapperservices = dapperservice;
         }
@@ -17,6 +17,24 @@ namespace MyWebApi.Services
         {
             string query = "select * from Tbl_Window";
             var list = _dapperservices.Query<PersonModels>(query);
+            ResponseModel res = new ResponseModel
+            {
+                Complete = true,
+                Message = "Successful",
+                Data = list
+            };
+            return res;
+        }
+
+        public ResponseModel GetPersonList(int pageNo,int pageSize)
+        {
+            string query = "select * from Tbl_Window order by Id offset ((@pageNo-1) * @pageSize) rows fetch next @pageSize rows only";
+            var list = _dapperservices.Query<PersonModels>(query,new
+            {
+                pageNo = pageNo,
+                pageSize = pageSize
+
+            });
             ResponseModel res = new ResponseModel
             {
                 Complete = true,
@@ -54,7 +72,7 @@ namespace MyWebApi.Services
         public ResponseModel PostPerson(PersonModels model)
         {
             string field = string.Empty;
-
+            
             string password = model.Password.Replace(" ", "")!;
             model.Password = password;
 
@@ -265,9 +283,6 @@ namespace MyWebApi.Services
 
         }
 
-        public ResponseModel GetPersonList(int pageNo, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

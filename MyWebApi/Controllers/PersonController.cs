@@ -9,17 +9,24 @@ namespace MyWebApi.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        PersonServices _personsevices;
+        IPersonServices _personsevices;
 
-        public PersonController()
+        public PersonController(IPersonServices personservice)
         {
-            _personsevices = new PersonServices();
+            _personsevices = personservice;
         }
 
         [HttpGet]
         public IActionResult GetPerson()
         {
            var res = _personsevices.GetPersonList();
+            return Ok(res);
+        }
+
+        [HttpGet("{pageNo}/{pageSize}")]
+        public IActionResult GetPerson(int pageNo, int pageSize)
+        {
+            var res = _personsevices.GetPersonList(pageNo,pageSize);
             return Ok(res);
         }
 

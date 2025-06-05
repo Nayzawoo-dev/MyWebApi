@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Database.Shared
@@ -12,9 +13,9 @@ namespace Database.Shared
     internal class AdoServices
     {
         private readonly SqlConnectionStringBuilder _connection;
-        public AdoServices(SqlConnectionStringBuilder connection)
+        public AdoServices(IConfiguration connection)
         {
-            _connection = connection;
+            _connection = new SqlConnectionStringBuilder(connection.GetConnectionString("Database"));
         }
 
         public List<T> Query<T>(string query, params SqlParameter[] parameters)

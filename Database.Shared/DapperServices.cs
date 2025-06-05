@@ -1,14 +1,15 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace Database.Shared
 {
     public class DapperServices
     {
         private readonly SqlConnectionStringBuilder _connection;
-        public DapperServices(SqlConnectionStringBuilder connection)
+        public DapperServices(IConfiguration connection)
         {
-            _connection = connection;
+            _connection = new SqlConnectionStringBuilder(connection.GetConnectionString("Database"));
         }
 
         public List<T> Query<T>(string query, object? parameters = null)
